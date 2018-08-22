@@ -105,9 +105,12 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_COMPATIBLE_PROPERTY_OVERRIDE := true
 
 # A/B related packages
-PRODUCT_PACKAGES += bootctrl.sdm660 \
-    android.hardware.boot@1.0-impl \
-    android.hardware.boot@1.0-service
+PRODUCT_PACKAGES += \
+    android.hardware.boot@1.0-impl:64 \
+    android.hardware.boot@1.0-service \
+    android.hardware.boot@1.0-impl.recovery \
+    bootctrl.sdm660 \
+    bootctrl.sdm660.recovery
 
 # A/B Update engine
 AB_OTA_PARTITIONS += \
@@ -120,12 +123,6 @@ PRODUCT_PACKAGES += \
     update_engine \
     update_engine_sideload \
     update_verifier
-
-PRODUCT_STATIC_BOOT_CONTROL_HAL := \
-    bootctrl.sdm660 \
-    libgptutils \
-    libcutils \
-    libz
 
 PRODUCT_PACKAGES_DEBUG += \
     update_engine_client
@@ -510,6 +507,9 @@ PRODUCT_PROPERTY_OVERRIDES += \
     ro.vendor.sensors.facing=false \
     ro.vendor.sensors.cmc=false \
     ro.vendor.sdk.sensors.gestures=false
+
+# Soong
+PRODUCT_SOONG_NAMESPACES += $(LOCAL_PATH)
 
 # Telephony
 PRODUCT_PACKAGES += \

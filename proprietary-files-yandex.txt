@@ -278,13 +278,6 @@ vendor/firmware/cpp_firmware_v1_12_0.fw
 # Camera flash
 vendor/lib/libflash_pmic.so
 
-# Camera HAL
-vendor/lib/hw/camera.sdm660.so
-vendor/lib/libmmcamera_interface.so
-vendor/lib/libmmjpeg_interface.so
-vendor/lib/libmmlib2d_interface.so
-vendor/lib/libqomx_core.so
-
 # Camera jpeg
 vendor/lib/libmmjpeg.so
 vendor/lib/libmmqjpeg_codec.so

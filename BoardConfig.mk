@@ -29,7 +29,6 @@ TARGET_NO_BOOTLOADER := true
 
 # Platform
 TARGET_BOARD_PLATFORM := sdm660
-TARGET_BOARD_PLATFORM_GPU := qcom-adreno508
 
 # Architecture
 TARGET_ARCH := arm64

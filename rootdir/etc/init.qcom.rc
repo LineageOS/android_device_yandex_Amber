@@ -552,6 +552,7 @@ service qcom-c_late-sh /vendor/bin/init.class_late.sh
 
 on property:vold.decrypt=trigger_restart_framework
     start qcom-c_main-sh
+    restart vendor.audio-hal-2-0
     start wcnss-service
     start qcom-c_late-sh
 

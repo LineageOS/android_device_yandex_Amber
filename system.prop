@@ -207,6 +207,9 @@ persist.vendor.overlay.izat.optin=rro
 ro.location.osnlp.package=com.google.android.gms
 ro.location.osnlp.region.package=
 
+# SurfaceFlinger
+ro.surface_flinger.protected_contents=true
+
 # VoLTE&WFC&IMS
 persist.radio.calls.on.ims=true
 persist.radio.vrte_logic=1

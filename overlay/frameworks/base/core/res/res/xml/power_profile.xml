@@ -49,8 +49,8 @@
         <value>614</value>
         <value>777</value>
     </array>
-    <item name="cpu.awake">1.6</item>
-    <item name="cpu.idle">0.1</item>
+    <item name="cpu.idle">1.6</item>
+    <item name="cpu.suspend">0.1</item>
     <item name="battery.capacity">2970</item>
     <item name="radio.active">200</item>
     <item name="radio.scanning">10</item>

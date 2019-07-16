@@ -210,6 +210,9 @@ ro.location.osnlp.region.package=
 # SurfaceFlinger
 ro.surface_flinger.protected_contents=true
 
+debug.stagefright.omx_default_rank.sw-audio=1
+debug.stagefright.omx_default_rank=0
+
 # VoLTE&WFC&IMS
 persist.radio.calls.on.ims=true
 persist.radio.vrte_logic=1

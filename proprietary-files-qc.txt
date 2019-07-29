@@ -33,6 +33,18 @@ vendor/lib/rfsa/adsp/libscveObjectSegmentation_skel.so|d2174a2a4a680e93ee4262b5e
 vendor/lib/rfsa/adsp/libscveT2T_skel.so|487f830aca26c85ef79c8b599b2f03668ab732b5
 vendor/lib/rfsa/adsp/libvpp_svc_skel.so|2da97f61c1d14f1f9a38aecd8ab89a1f6fa8d991
 
+# Audio - from jason
+vendor/lib/libacdb-fts.so|ea90fc26aee07b0ee53d5ed11fd99e72f59a9043
+vendor/lib/libacdbloader.so|6a0e2543dd0fc03375ed3d46e3731643ed22be5b
+vendor/lib/libacdbrtac.so|9c9aaf4b67de4b1a37eb7a41843318847c37e5dc
+vendor/lib/libadiertac.so|6881d8f0faf2c20f6e6149561a0b4f550f8aaec4
+vendor/lib/libadm.so|78405867b5013d525599e1919a74d38112006209
+vendor/lib/libaudcal.so|4eb3fb4bb9c44fa70a6a01cdd9bf27b97175be04
+vendor/lib/libqtigef.so|eb15037caba9fe07b1d3f6d4979c27746bb39343
+vendor/lib/soundfx/libqcbassboost.so|a53a8e12215dbf70e5551fd53c0087d056b57d2c
+vendor/lib/soundfx/libqcreverb.so|11cc07f166a8b40750a939b54b0b822f03d03021
+vendor/lib/soundfx/libqcvirt.so|35eeb8f14a88c463077345fa80bac1adff63e7f8
+
 # ANT+ - from LA.UM.7.2.r1-06900-sdm660.0
 -lib/libantradio.so|b6b7b93dfa155de37d755542a0d66cc9f77e256c
 lib64/com.qualcomm.qti.ant@1.0.so|33d353a1077c70c3d7c013938b092e93a18d5b58

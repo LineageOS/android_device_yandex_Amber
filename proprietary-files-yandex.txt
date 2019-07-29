@@ -21,3 +21,16 @@ vendor/firmware/a530_pm4.fw
 
 # Firmware audio
 vendor/firmware/fs16xx_01s_mono.preset
+
+# Sensors
+vendor/bin/sensors.qcom:vendor/bin/sensors.qti
+vendor/etc/sensors/hals.conf
+vendor/etc/sensors/sensor_def_qcomdev.conf
+vendor/lib/hw/activity_recognition.sdm660.so
+vendor/lib/libsensor1.so
+vendor/lib/libsensor_reg.so
+vendor/lib/sensors.ssc.so
+vendor/lib64/hw/activity_recognition.sdm660.so
+vendor/lib64/libsensor1.so
+vendor/lib64/libsensor_reg.so
+vendor/lib64/sensors.ssc.so

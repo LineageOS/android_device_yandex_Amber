@@ -21,8 +21,8 @@
 # definition file).
 #
 
-# Device was launched with N-MR1
-$(call inherit-product, $(SRC_TARGET_DIR)/product/product_launched_with_o.mk)
+# Device was launched with O-MR1
+$(call inherit-product, $(SRC_TARGET_DIR)/product/product_launched_with_o_mr1.mk)
 
 $(call inherit-product, vendor/yandex/Amber/Amber-vendor.mk)
 

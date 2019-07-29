@@ -528,6 +528,9 @@ vendor/bin/time_daemon|ac244644735005d4c4322168001dcd3ae757007f
 vendor/etc/init/init.time_daemon.rc|edb18291351eb7efcb597d33c2c7f2d9bb7328a9
 vendor/lib64/libtime_genoff.so|9de68b1aa139b06b0e455bd1c24ed0c527492c3b
 
+# Wifi - from jason
+vendor/bin/cnss-daemon|e05372a3b0842f5a141c7503fab297bbdc03e999
+
 # WiFi Display - from LA.UM.7.2.r1-06900-sdm660.0
 bin/wfdservice|edeb291221024401cbae69c2fa4e58733b7efc4c
 etc/init/wfdservice.rc|311bfdd1675e56499662f39455536b75b78477bb

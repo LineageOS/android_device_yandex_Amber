@@ -66,4 +66,8 @@ extract "${MY_DIR}/proprietary-files-qc.txt" "${SRC}" ${KANG} --section "${SECTI
 
 extract "${MY_DIR}/proprietary-files-yandex.txt" "${SRC}" ${KANG} --section "${SECTION}"
 
+DEVICE_BLOB_ROOT="$LINEAGE_ROOT"/vendor/"$VENDOR"/"$DEVICE"/proprietary
+
+patchelf --remove-needed libgui.so "$DEVICE_BLOB_ROOT"/vendor/lib/libmmcamera_ppeiscore.so
+
 "${MY_DIR}/setup-makefiles.sh"

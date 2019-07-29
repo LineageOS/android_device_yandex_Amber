@@ -22,7 +22,9 @@ MM_V4L2_DRIVER_LIST += sdm660
 ifneq (,$(filter $(MM_V4L2_DRIVER_LIST),$(TARGET_BOARD_PLATFORM)))
   ifneq ($(strip $(USE_CAMERA_STUB)),true)
     ifneq ($(BUILD_TINY_ANDROID),true)
-      include $(call all-subdir-makefiles)
+        ifeq ($(USE_OSS_CAMERA),true)
+            include $(call all-subdir-makefiles)
+        endif
     endif
   endif
 endif

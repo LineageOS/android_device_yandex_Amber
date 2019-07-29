@@ -170,12 +170,14 @@
         <ctl name="LSM8 Mixer SLIMBUS_0_TX" value="1" />
     </path>
 
+<!-- [8710][Audio][Lubo] Modify SVA to use main mic. 20180504 Begin -->
     <path name="listen-cpe-handset-mic">
-        <ctl name="MAD Input" value="DMIC2" />
+        <ctl name="MAD Input" value="DMIC1" />
         <ctl name="MAD_SEL MUX" value="SPE" />
         <ctl name="MAD_INP MUX" value="MAD" />
         <ctl name="MAD_CPE1 Switch" value="1" />
     </path>
+<!-- [8710][Audio][Lubo] 20180504 End -->
 
     <path name="listen-cpe-handset-mic-ecpp">
         <ctl name="CLK MODE" value="INTERNAL" />

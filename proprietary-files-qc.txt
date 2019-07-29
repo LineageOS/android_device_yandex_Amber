@@ -155,8 +155,12 @@ vendor/bin/hw/vendor.qti.hardware.tui_comm@1.0-service-qti|5eeb2bdd91fd06d816c06
 vendor/etc/init/vendor.qti.hardware.tui_comm@1.0-service-qti.rc|2cfc563d7e1579374f001c94588fae7835a12ffc
 vendor/lib64/vendor.qti.hardware.tui_comm@1.0.so|12953107e8f988bc37991d2ce4cb26f7e16beb63
 
-# Gatekeeper - from LA.UM.7.2.r1-06900-sdm660.0
+# Gatekeeper - wayne
+vendor/bin/hw/android.hardware.gatekeeper@1.0-service-qti|119385ebd0a25b9bf20ce70375a62d806f11d2f1
+vendor/etc/init/android.hardware.gatekeeper@1.0-service-qti.rc|1b8d5f58fe0a57906acf72b862c16a2521daa97b
+vendor/lib/hw/android.hardware.gatekeeper@1.0-impl-qti.so|0f3b3809977a7048873b8b47f7533aa0e81491ea
 vendor/lib/hw/gatekeeper.sdm660.so|bb56ae8a8fcc13148d1723044b8c617e6cf0b7ae
+vendor/lib64/hw/android.hardware.gatekeeper@1.0-impl-qti.so|b9afb923665e7714309c2b912e0663cdd781f818
 vendor/lib64/hw/gatekeeper.sdm660.so|e8f32651e4bfff88fcc02c34eca6cd5f04a444aa
 
 # GPS - from LA.UM.7.2.r1-06900-sdm660.0
@@ -269,12 +273,24 @@ vendor/lib64/libsdm-disp-vndapis.so|d93f262f60b58f32273909142aa7fdc7bfb6dda3
 vendor/lib64/libsdmextension.so|d431d8feaa8b45a80f031d50e424418e53aed5d2
 vendor/lib64/libtinyxml2_1.so|a2d9661cf2bb426e72ba15fd1a6a4eec940418a5
 
-# Keystore - from LA.UM.7.2.r1-06900-sdm660.0
-vendor/lib/hw/keystore.sdm660.so|ad49563962736752cd094b113e46658e1b5e6d39
-vendor/lib64/hw/keystore.sdm660.so|645881b7a2709dfce5d6b9be9df4659ec2ab0eac
-vendor/lib64/libkeymasterdeviceutils.so|d41273f86395857f3515fb7d59ce1b05a3fca96a
-vendor/lib64/libkeymasterprovision.so|fd006b24828bbb914b949a568d36cb0203a165ff
-vendor/lib64/libkeymasterutils.so|b681ce20d97fd4cd611b06c3eaed076349c5fc2d
+# Keymaster - from wayne
+vendor/lib/libkeymasterdeviceutils.so|0765fc204e741b0ee6d863e5512b2615f9a43d1c
+vendor/lib/libkeymasterprovision.so|9e18873343a8f9961723921bad1bd94094f63e5f
+vendor/lib/libkeymasterutils.so|d83fbb2aed8f1eb8faefe5f99c71f0f4dd262aa6
+vendor/lib/libqtikeymaster4.so|d4f7691d64274ccf86ecf779188fac3ca147b1e3
+vendor/lib64/libkeymasterdeviceutils.so|ffbf8d30cc4d41b24c2646529992da81cd794b7e
+vendor/lib64/libkeymasterprovision.so|01c113e2ddc4e2e5a2f62544d3f393bc31f15c8e
+vendor/lib64/libkeymasterutils.so|81e2d0e422bc5d6f0dd3f9d4f86ef086f9460205
+vendor/lib64/libqtikeymaster4.so|5d12e1f953fcd6957df09646528ec566fc610a46
+
+# Keystore - from wayne
+vendor/bin/hw/android.hardware.keymaster@3.0-service-qti|85f2221137d88d2aeefa67d5d92c24defe0ff18d
+vendor/bin/hw/android.hardware.keymaster@4.0-service-qti|6646c8511a277aaa86c2edbd425e3eb6e5926a41
+vendor/etc/init/android.hardware.keymaster@3.0-service-qti.rc|573b7392c8997008204081165cfe81a11080745d
+vendor/lib/hw/android.hardware.keymaster@3.0-impl-qti.so|6ca9ff030680738d0259b5b4f82fe57608d0d515
+vendor/lib/hw/keystore.sdm660.so|990bc5ca05914f3df85320a31b26fae325e174e3
+vendor/lib64/hw/android.hardware.keymaster@3.0-impl-qti.so|c894b0847289c15ec2d201c69a66987fab1f8453
+vendor/lib64/hw/keystore.sdm660.so|ffd01591bd8a864cb2dbc6fd2c01fbd36ae54051
 
 # Listen - from jason
 vendor/lib/hw/sound_trigger.primary.sdm660.so|7b2b5842fa3a05aa18cf0a1188eabb06744fa5c2

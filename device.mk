@@ -101,13 +101,32 @@ PRODUCT_PROPERTY_OVERRIDES += \
     sys.autosuspend.timeout=500000
 
 # A/B related packages
-PRODUCT_PACKAGES += update_engine \
-    update_engine_client \
-    update_verifier \
-    bootctrl.sdm660 \
-    brillo_update_payload \
+PRODUCT_PACKAGES += bootctrl.sdm660 \
     android.hardware.boot@1.0-impl \
     android.hardware.boot@1.0-service
+
+# A/B Update engine
+PRODUCT_PACKAGES += \
+    brillo_update_payload \
+    update_engine \
+    update_engine_sideload \
+    update_verifier
+
+PRODUCT_STATIC_BOOT_CONTROL_HAL := \
+    bootctrl.sdm660 \
+    libgptutils \
+    libcutils \
+    libz
+
+PRODUCT_PACKAGES_DEBUG += \
+    update_engine_client
+
+PRODUCT_PACKAGES += otapreopt_script
+AB_OTA_POSTINSTALL_CONFIG += \
+    RUN_POSTINSTALL_system=true \
+    POSTINSTALL_PATH_system=system/bin/otapreopt_script \
+    FILESYSTEM_TYPE_system=ext4 \
+    POSTINSTALL_OPTIONAL_system=true
 
 # Audio
 PRODUCT_PACKAGES += \

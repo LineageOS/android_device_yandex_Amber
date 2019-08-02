@@ -317,23 +317,7 @@ bool QCameraCommon::isVideoUBWCEnabled()
 
 bool QCameraCommon::is_target_SDM630()
 {
-    int fd;
-    bool is_target_SDM630=false;
-    char buf[10] = {0};
-    fd = open("/sys/devices/soc0/soc_id", O_RDONLY);
-    if (fd >= 0) {
-        if (read(fd, buf, sizeof(buf) - 1) == -1) {
-            ALOGW("Unable to read soc_id");
-            is_target_SDM630 = false;
-        } else {
-            int soc_id = atoi(buf);
-            if (soc_id == 318 || soc_id== 327) {
-            is_target_SDM630 = true; /* Above SOCID for SDM630 */
-            }
-        }
-    }
-    close(fd);
-    return is_target_SDM630;
+    return true;
 }
 
 

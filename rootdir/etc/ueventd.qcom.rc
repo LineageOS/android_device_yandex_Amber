@@ -404,3 +404,6 @@ firmware_directories /vendor/firmware_mnt/image/
 #QG device
 /dev/qg               0660   system     system
 /dev/qg_battery       0660   system     system
+
+#ELAN FP
+/dev/elan_fp          0660   system     system

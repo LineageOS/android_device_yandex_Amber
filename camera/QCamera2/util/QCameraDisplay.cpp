@@ -1,4 +1,4 @@
-/* Copyright (c) 2015-2017, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2015-2018, The Linux Foundation. All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
 * modification, are permitted provided that the following conditions are
@@ -251,15 +251,15 @@ QCameraDisplay::QCameraDisplay()
         char  value[PROPERTY_VALUE_MAX];
         nsecs_t default_vsync_interval;
         // Read a list of properties used for tuning
-        property_get("persist.camera.disp.num_vsync", value, "4");
+        property_get("persist.vendor.camera.disp.num_vsync", value, "4");
         mNum_vsync_from_vfe_isr_to_presentation_timestamp = atoi(value);
-        property_get("persist.camera.disp.ms_to_vsync", value, "2");
+        property_get("persist.vendor.camera.disp.ms_to_vsync", value, "2");
         mSet_timestamp_num_ns_prior_to_vsync = atoi(value) * NSEC_PER_MSEC;
-        property_get("persist.camera.disp.filter_max", value, "2");
+        property_get("persist.vendor.camera.disp.filter_max", value, "2");
         mVfe_and_mdp_freq_wiggle_filter_max_ns = atoi(value) * NSEC_PER_MSEC;
-        property_get("persist.camera.disp.filter_min", value, "4");
+        property_get("persist.vendor.camera.disp.filter_min", value, "4");
         mVfe_and_mdp_freq_wiggle_filter_min_ns = atoi(value) * NSEC_PER_MSEC;
-        property_get("persist.camera.disp.fps", value, "60");
+        property_get("persist.vendor.camera.disp.fps", value, "60");
         if (atoi(value) > 0) {
             default_vsync_interval= s2ns(1) / atoi(value);
         } else {
@@ -348,14 +348,6 @@ QCameraDisplay::init()
         mDisplayEventCallback = new DisplayEventCallback();
     }
 
-    /*setting callbacks*/
-    Return<Status> retVal = mDisplayEventReceiver->init(mDisplayEventCallback);
-    if(!retVal.isOk() || (Status::SUCCESS != static_cast<Status>(retVal)) )
-    {
-        LOGE("Failed to register display vsync callback");
-        return;
-    }
-
     if(mDeathRecipient == nullptr)
     {
         mDeathRecipient = new DeathRecipient();
@@ -386,8 +378,15 @@ QCameraDisplay::startVsync(bool bStart)
 
     if(bStart)
     {
+         /*setting callbacks*/
+         Return<Status> retVal = mDisplayEventReceiver->init(mDisplayEventCallback);
+         if(!retVal.isOk() || (Status::SUCCESS != static_cast<Status>(retVal)) )
+         {
+             LOGE("Failed to register display vsync callback");
+             return false;
+         }
         /*send callback for each vsync event*/
-        Return<Status> retVal = mDisplayEventReceiver->setVsyncRate(1);
+        retVal = mDisplayEventReceiver->setVsyncRate(1);
         if(!retVal.isOk() || (Status::SUCCESS != static_cast<Status>(retVal)) )
         {
             LOGE("Failed to start vsync events");
@@ -401,6 +400,13 @@ QCameraDisplay::startVsync(bool bStart)
         if(!retVal.isOk() || (Status::SUCCESS != static_cast<Status>(retVal)) )
         {
             LOGE("Failed to stop vsync events");
+            return false;
+        }
+        /*Disable callbacks*/
+        retVal = mDisplayEventReceiver->close();
+        if(!retVal.isOk() || (Status::SUCCESS != static_cast<Status>(retVal)))
+        {
+            LOGE("Failed to disable vsync callback");
             return false;
         }
     }

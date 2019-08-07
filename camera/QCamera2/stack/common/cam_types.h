@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2018, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2012-2017, The Linux Foundation. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -140,7 +140,7 @@
 #define EXIF_IMAGE_DESCRIPTION_SIZE 100
 
 #define MAX_INFLIGHT_REQUESTS  6
-#define MAX_INFLIGHT_BLOB      10
+#define MAX_INFLIGHT_BLOB      6
 #define MIN_INFLIGHT_REQUESTS  3
 #define MIN_INFLIGHT_60FPS_REQUESTS (6)
 #define MAX_INFLIGHT_REPROCESS_REQUESTS 1
@@ -149,7 +149,7 @@
 
 #define MAX_VIDEO_BUFFERS 30
 
-#define QCAMERA_DUMP_FRM_LOCATION "/data/misc/camera/"
+#define QCAMERA_DUMP_FRM_LOCATION "/data/vendor/camera/"
 #define QCAMERA_MAX_FILEPATH_LENGTH 64
 
 #define LIKELY(x)       __builtin_expect((x), true)
@@ -429,7 +429,6 @@ typedef enum {
     CAM_FORMAT_DEPTH8,
     CAM_FORMAT_DEPTH_POINT_CLOUD,
 
-    CAM_FORMAT_META_RAW_12BIT,
     CAM_FORMAT_MAX
 } cam_format_t;
 
@@ -2489,6 +2488,7 @@ typedef enum {
     /* Enable/Disable AF fine scan */
     CAM_INTF_PARM_SKIP_FINE_SCAN,
     CAM_INTF_PARM_BOKEH_MODE,
+    CAM_INTF_META_USERZOOM,
     CAM_INTF_PARM_MAX
 } cam_intf_parm_type_t;
 
@@ -3114,5 +3114,16 @@ typedef enum {
     CAM_HAL_PP_TYPE_CLEARSIGHT,          // dual camera Bayer+Mono Clearsight
     CAM_HAL_PP_TYPE_MAX
 } cam_hal_pp_type_t;
+
+typedef enum {
+    CAM_HAL3_JPEG_TYPE_NONE = 0,        // default undefined type
+    CAM_HAL3_JPEG_TYPE_MAIN,            // MAIN image
+    CAM_HAL3_JPEG_TYPE_BOKEH,           // BOKEH image
+    CAM_HAL3_JPEG_TYPE_AUX,             // AUX image
+    CAM_HAL3_JPEG_TYPE_DEPTH,           // DEPTH image
+    CAM_HAL3_JPEG_TYPE_FUSION,
+    CAM_HAL3_JPEG_TYPE_MAX
+} cam_hal3_JPEG_type_t;
+
 
 #endif /* __QCAMERA_TYPES_H__ */

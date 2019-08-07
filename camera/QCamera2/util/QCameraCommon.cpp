@@ -1,4 +1,4 @@
-/* Copyright (c) 2016, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2016-2018, The Linux Foundation. All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
 * modification, are permitted provided that the following conditions are
@@ -287,16 +287,20 @@ bool QCameraCommon::isVideoUBWCEnabled()
 {
 #ifdef UBWC_PRESENT
     char prop[PROPERTY_VALUE_MAX];
-    int pFormat;
     memset(prop, 0, sizeof(prop));
     /* Checking the property set by video
-     * to disable/enable UBWC */
-    property_get("video.disable.ubwc", prop, "0");
-    pFormat = atoi(prop);
-    if (pFormat == 0) {
-        return TRUE;
+     * to disable/enable UBWC. And, Android P
+     * onwards we use vendor prefix*/
+#ifdef USE_VENDOR_PROP
+    if (property_get("vendor.video.disable.ubwc", prop, "") > 0) {
+        return (atoi(prop) == 0);
     }
-    return FALSE;
+#else
+    if (property_get("video.disable.ubwc", prop, "") > 0){
+        return (atoi(prop) == 0);
+    }
+#endif
+    return TRUE;
 #else
     return FALSE;
 #endif
@@ -317,7 +321,23 @@ bool QCameraCommon::isVideoUBWCEnabled()
 
 bool QCameraCommon::is_target_SDM630()
 {
-    return true;
+    int fd;
+    bool is_target_SDM630=false;
+    char buf[10] = {0};
+    fd = open("/sys/devices/soc0/soc_id", O_RDONLY);
+    if (fd >= 0) {
+        if (read(fd, buf, sizeof(buf) - 1) == -1) {
+            ALOGW("Unable to read soc_id");
+            is_target_SDM630 = false;
+        } else {
+            int soc_id = atoi(buf);
+            if (soc_id == 318 || soc_id== 327) {
+            is_target_SDM630 = true; /* Above SOCID for SDM630 */
+            }
+        }
+    }
+    close(fd);
+    return is_target_SDM630;
 }
 
 
@@ -330,7 +350,7 @@ bool QCameraCommon::skipAnalysisBundling()
     char prop[PROPERTY_VALUE_MAX];
     bool needBundling = true;
     memset(prop, 0, sizeof(prop));
-    property_get("persist.camera.isp.analysis_en", prop, "1");
+    property_get("persist.vendor.camera.isp.analysis_en", prop, "1");
     needBundling = atoi(prop);
 
     return !needBundling;
@@ -356,6 +376,56 @@ bool QCameraCommon::needAnalysisStream()
     }
 
     return needAnalysisStream;
+}
+
+/*===========================================================================
+* FUNCTION   : isBayer
+*
+* DESCRIPTION: check whether sensor is bayer type or not
+*
+* PARAMETERS : cam_capability_t
+*
+* RETURN    : true or false
+*==========================================================================*/
+bool QCameraCommon::isBayer(cam_capability_t *caps)
+{
+    return (caps && (caps->color_arrangement == CAM_FILTER_ARRANGEMENT_RGGB ||
+            caps->color_arrangement == CAM_FILTER_ARRANGEMENT_GRBG ||
+            caps->color_arrangement == CAM_FILTER_ARRANGEMENT_GBRG ||
+            caps->color_arrangement == CAM_FILTER_ARRANGEMENT_BGGR));
+}
+
+/*===========================================================================
+* FUNCTION   : isMono
+*
+* DESCRIPTION: check whether sensor is mono or not
+*
+* PARAMETERS : cam_capability_t
+*
+* RETURN    : true or false
+*==========================================================================*/
+bool QCameraCommon::isMono(cam_capability_t *caps)
+{
+    return (caps && (caps->color_arrangement == CAM_FILTER_ARRANGEMENT_Y));
+}
+
+/*===========================================================================
+* FUNCTION   : getDualCameraConfig
+*
+* DESCRIPTION: get dual camera configuration whether B+M/W+T
+*
+* PARAMETERS : capabilities of main and aux cams
+*
+* RETURN    : dual_cam_type
+*==========================================================================*/
+dual_cam_type QCameraCommon::getDualCameraConfig(cam_capability_t *capsMainCam,
+        cam_capability_t *capsAuxCam)
+{
+    dual_cam_type type = DUAL_CAM_WIDE_TELE;
+    if (isBayer(capsMainCam) && isMono(capsAuxCam)) {
+        type = DUAL_CAM_BAYER_MONO;
+    }
+    return type;
 }
 
 }; // namespace qcamera

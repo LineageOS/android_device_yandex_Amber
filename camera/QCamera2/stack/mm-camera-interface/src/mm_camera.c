@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2017, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2012-2018, The Linux Foundation. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -2533,11 +2533,11 @@ int32_t mm_camera_handle_frame_sync_cb(mm_camera_obj_t *my_obj,
  * DESCRIPTION: mm camera debug interface
  *
  *==========================================================================*/
-pthread_mutex_t dbg_log_mutex;
+pthread_mutex_t dbg_log_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 static int         cam_soft_assert     = 0;
 static FILE       *cam_log_fd          = NULL;
-static const char *cam_log_filename    = "/data/misc/camera/cam_dbg_log_hal.txt";
+static const char *cam_log_filename    = QCAMERA_DUMP_FRM_LOCATION"cam_dbg_log_hal.txt";
 
 #undef LOG_TAG
 #define LOG_TAG "QCamera"
@@ -2574,13 +2574,13 @@ typedef struct {
 
 static module_debug_t cam_loginfo[(int)CAM_LAST_MODULE] = {
   {CAM_GLBL_DBG_ERR, 1,
-      "",         "persist.camera.global.debug"     }, /* CAM_NO_MODULE     */
+      "",         "persist.vendor.camera.global.debug"     }, /* CAM_NO_MODULE     */
   {CAM_GLBL_DBG_ERR, 1,
-      "<HAL>", "persist.camera.hal.debug"        }, /* CAM_HAL_MODULE    */
+      "<HAL>", "persist.vendor.camera.hal.debug"        }, /* CAM_HAL_MODULE    */
   {CAM_GLBL_DBG_ERR, 1,
-      "<MCI>", "persist.camera.mci.debug"        }, /* CAM_MCI_MODULE    */
+      "<MCI>", "persist.vendor.camera.mci.debug"        }, /* CAM_MCI_MODULE    */
   {CAM_GLBL_DBG_ERR, 1,
-      "<JPEG>", "persist.camera.mmstill.logs"     }, /* CAM_JPEG_MODULE   */
+      "<JPEG>", "persist.vendor.camera.mmstill.logs"     }, /* CAM_JPEG_MODULE   */
 };
 
 /** cam_get_dbg_level
@@ -2764,16 +2764,15 @@ void mm_camera_set_dbg_log_properties(void) {
   void mm_camera_debug_open(void) {
     char         property_value[PROPERTY_VALUE_MAX] = {0};
 
-    pthread_mutex_init(&dbg_log_mutex, 0);
     mm_camera_set_dbg_log_properties();
 
     /* configure asserts */
-    property_get("persist.camera.debug.assert", property_value, "0");
+    property_get("persist.vendor.camera.debug.assert", property_value, "0");
     cam_soft_assert = atoi(property_value);
 
     /* open default log file according to property setting */
     if (cam_log_fd == NULL) {
-      property_get("persist.camera.debug.logfile", property_value, "0");
+      property_get("persist.vendor.camera.debug.logfile", property_value, "0");
       if (atoi(property_value)) {
         /* we always put the current process id at end of log file name */
         char pid_str[255] = {0};
@@ -2791,7 +2790,6 @@ void mm_camera_set_dbg_log_properties(void) {
           ALOGD("Debug log file %s open\n", new_log_file_name);
         }
       } else {
-        property_set("persist.camera.debug.logfile", "0");
         ALOGD("Debug log file is not enabled");
         return;
       }
@@ -2805,12 +2803,9 @@ void mm_camera_set_dbg_log_properties(void) {
    *  Return: N/A
    **/
   void mm_camera_debug_close(void) {
-
     if (cam_log_fd != NULL) {
       fclose(cam_log_fd);
       cam_log_fd = NULL;
     }
-
-    pthread_mutex_destroy(&dbg_log_mutex);
   }
 #endif

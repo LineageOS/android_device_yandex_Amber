@@ -656,12 +656,6 @@ private:
         CAMERA_ORIENTATION_LANDSCAPE = 2,
     };
 
-    enum {
-        CAM_BOKEH_WIDE_WIDTH = 4000,
-        CAM_BOKEH_WIDE_HEIGHT = 3000,
-        CAM_BOKEH_TELE_WIDTH = 4000,
-        CAM_BOKEH_TELE_HEIGHT = 3000
-    };
     template <typename valueType> struct QCameraMap {
         const char *const desc;
         valueType val;
@@ -1196,11 +1190,6 @@ private:
     int32_t SyncDCParams();
     void setSyncDCParams();
     void setAsymmetricSnapMode();
-
-    dual_cam_type getDualCameraConfig(cam_capability_t *capsMainCam,
-            cam_capability_t *capsAuxCam);
-    bool isBayer(cam_capability_t *caps);
-    bool isMono(cam_capability_t *caps);
     inline bool isBayerMono() { return (mDualCamType == DUAL_CAM_BAYER_MONO); };
     bool isDualCamAvailable();
 

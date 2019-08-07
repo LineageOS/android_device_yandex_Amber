@@ -1,4 +1,4 @@
-/* Copyright (c) 2017, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2017-2018, The Linux Foundation. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -195,7 +195,7 @@ int32_t QCameraBokeh::init(
     /* To dump debug data */
     char prop[PROPERTY_VALUE_MAX];
     memset(prop, 0, sizeof(prop));
-    property_get("persist.camera.bokeh.debug", prop, "0");
+    property_get("persist.vendor.camera.bokeh.debug", prop, "0");
     m_bDebug = atoi(prop);
 
     LOGH("X");
@@ -291,8 +291,7 @@ int32_t QCameraBokeh::feedInput(qcamera_hal_pp_data_t *pInputData)
     int32_t rc = NO_ERROR;
     LOGH("E");
     if (NULL != pInputData) {
-        QCameraStream* pSnapshotStream = NULL;
-        mm_camera_buf_def_t *pInputSnapshotBuf = getSnapshotBuf(pInputData, pSnapshotStream);
+        mm_camera_buf_def_t *pInputSnapshotBuf = getSnapshotBuf(pInputData);
         if (pInputSnapshotBuf != NULL) {
             // Check for main and aux handles
             uint32_t mainHandle = get_main_camera_handle(
@@ -308,8 +307,6 @@ int32_t QCameraBokeh::feedInput(qcamera_hal_pp_data_t *pInputData)
             }
             if (mainHandle && (mBokehData.main_input == NULL)) {
                 mBokehData.main_input = pInputData;
-                //Encode main image always
-                mBokehData.main_input->needEncode = true;
                 LOGH("Update main input");
             }
             else if (auxHandle && (mBokehData.aux_input == NULL)) {
@@ -321,6 +318,8 @@ int32_t QCameraBokeh::feedInput(qcamera_hal_pp_data_t *pInputData)
                 if (bNeedCamSwap) {
                     SWAP(mBokehData.main_input, mBokehData.aux_input);
                 }
+                //Encode main image always
+                mBokehData.main_input->needEncode = true;
                 m_halPPGetOutputCB(pInputSnapshotBuf->frame_idx, m_pHalPPMgr);
             }
         }
@@ -385,26 +384,18 @@ int32_t QCameraBokeh::process()
     // Start the blending process when it is ready
     if (canProcess()) {
         LOGH("Start Bokeh processing");
-        QCameraStream* pAuxStream = NULL;
-        QCameraStream* pMainStream = NULL;
+        mm_camera_buf_def_t *pAuxSnap = getSnapshotBuf(mBokehData.aux_input);
+        mm_camera_buf_def_t *pMainSnap = getSnapshotBuf(mBokehData.main_input);
 
-        mm_camera_buf_def_t *pAuxSnap = getSnapshotBuf(mBokehData.aux_input, pAuxStream);
-        mm_camera_buf_def_t *pMainSnap = getSnapshotBuf(mBokehData.main_input, pMainStream);
-
-        if (!pAuxStream || !pMainStream || !pAuxSnap || !pMainSnap) {
+        if (!pAuxSnap || !pMainSnap) {
             releaseData(mBokehData.aux_input);
             releaseData(mBokehData.main_input);
             releaseData(mBokehData.bokeh_output);
-            LOGE("Error!! Snapshot buffer/stream or depthmap not available");
+            LOGE("Error!! Snapshot buffer  not available");
             return BAD_VALUE;
         }
         mm_camera_super_buf_t *pOutputSuperBuf = mBokehData.bokeh_output->frame;
         mm_camera_buf_def_t *pOutputBuf = pOutputSuperBuf->bufs[0];
-
-        // Get offset info from reproc stream
-        cam_frame_len_offset_t offset;
-        memset(&offset, 0, sizeof(offset));
-        pMainStream->getFrameOffset(offset);
 
         //Get input and output parameter
         bokeh_input_params_t inParams;
@@ -419,7 +410,8 @@ int32_t QCameraBokeh::process()
 
         if (rc != NO_ERROR) {
             LOGE("Error in bokeh processing. Fallback and copy input to output");
-            memcpy(pOutputBuf->buffer, pMainSnap->buffer, offset.frame_len);
+            memcpy(pOutputBuf->buffer, pMainSnap->buffer,
+                                       mBokehData.main_input->snap_offset.frame_len);
         }
 
         if (m_bDebug) {
@@ -434,14 +426,9 @@ int32_t QCameraBokeh::process()
             dumpInputParams("input_params", mDebugData, pMainSnap->frame_idx);
         }
 
-        // Invalidate input buffer
-        QCameraMemory *pMem = NULL;
-        pMem = (QCameraMemory *)pAuxSnap->mem_info;
-        pMem->invalidateCache(pAuxSnap->buf_idx);
-        pMem = (QCameraMemory *)pMainSnap->mem_info;
-        pMem->invalidateCache(pMainSnap->buf_idx);
         // Clean and invalidate output buffer
         mBokehData.bokeh_output->snapshot_heap->cleanInvalidateCache(0);
+        mBokehData.depth_output->snapshot_heap->cleanInvalidateCache(0);
 
         // Callback Manager to notify output buffer and return input buffers
         LOGH("notifying Bokeh output");
@@ -487,15 +474,10 @@ bool QCameraBokeh::canProcess()
  *==========================================================================*/
 void QCameraBokeh::getInputParams(bokeh_input_params_t& inParams)
 {
-    QCameraStream* pAuxStream = NULL;
-    QCameraStream* pMainStream = NULL;
-    QCameraStream* pAuxMetaStream  = NULL;
-    QCameraStream* pMainMetaStream  = NULL;
-
-    mm_camera_buf_def_t *pAuxSnap = getSnapshotBuf(mBokehData.aux_input, pAuxStream);
-    mm_camera_buf_def_t *pMainSnap = getSnapshotBuf(mBokehData.main_input, pMainStream);
-    mm_camera_buf_def_t *pAuxMeta = getMetadataBuf(mBokehData.aux_input, pAuxMetaStream);
-    mm_camera_buf_def_t *pMainMeta = getMetadataBuf(mBokehData.main_input, pMainMetaStream);
+    mm_camera_buf_def_t *pAuxSnap = getSnapshotBuf(mBokehData.aux_input);
+    mm_camera_buf_def_t *pMainSnap = getSnapshotBuf(mBokehData.main_input);
+    mm_camera_buf_def_t *pAuxMeta = getMetadataBuf(mBokehData.aux_input);
+    mm_camera_buf_def_t *pMainMeta = getMetadataBuf(mBokehData.main_input);
 
     if (!pAuxSnap || !pMainSnap || !pAuxMeta || !pMainMeta) {
         LOGH("NULL pointer pAuxSnap: %p, pMainSnap: %p pAuxMeta: %p, pMainMeta: %p",
@@ -503,18 +485,11 @@ void QCameraBokeh::getInputParams(bokeh_input_params_t& inParams)
         return;
     }
 
-    if (!pAuxStream || !pMainStream || !pAuxMetaStream || !pMainMetaStream) {
-        LOGH("NULL pointer pAuxStream: %p, pMainStream: %p pAuxMetaStream: %p,"
-                "pMainMetaStream: %p", pAuxStream, pMainStream, pAuxMetaStream, pMainMetaStream);
-        return;
-    }
-
     metadata_buffer_t *pAuxMetaBuf = (metadata_buffer_t *)pAuxMeta->buffer;
     metadata_buffer_t *pMainMetaBuf = (metadata_buffer_t *)pMainMeta->buffer;
 
     // main frame size
-    cam_frame_len_offset_t offset;
-    pMainStream->getFrameOffset(offset);
+    cam_frame_len_offset_t offset = mBokehData.main_input->snap_offset;
     inParams.main.width     = offset.mp[0].width;
     inParams.main.height    = offset.mp[0].height;
     inParams.main.stride    = offset.mp[0].stride;
@@ -529,7 +504,7 @@ void QCameraBokeh::getInputParams(bokeh_input_params_t& inParams)
             inParams.main.frame_len);
 
     // aux frame size
-    pAuxStream->getFrameOffset(offset);
+    offset = mBokehData.aux_input->snap_offset;
     inParams.aux.width     = offset.mp[0].width;
     inParams.aux.height    = offset.mp[0].height;
     inParams.aux.stride    = offset.mp[0].stride;
@@ -563,6 +538,7 @@ void QCameraBokeh::getInputParams(bokeh_input_params_t& inParams)
         inParams.blurLevel = (float) blurInfo->blur_level / blurInfo->blur_max_value;
         DUMP("\nBlurLevel = %f", inParams.blurLevel);
     }
+
     IF_META_AVAILABLE(cam_rect_t, hAfRegions, CAM_INTF_META_AF_DEFAULT_ROI, pMainMetaBuf) {
         inParams.afROI = *hAfRegions;
         DUMP("\nAF ROI : (%d, %d, %d, %d)",
@@ -579,21 +555,12 @@ void QCameraBokeh::getInputParams(bokeh_input_params_t& inParams)
 
     memset(&inParams.zoomROI, 0, sizeof(inParams.zoomROI));
     IF_META_AVAILABLE(cam_crop_data_t, crop, CAM_INTF_META_CROP_DATA, pMainMetaBuf) {
-        QCameraStream* pSnapStream = NULL;
-        qcamera_hal_pp_data_t tempData;
-        tempData.frame = mBokehData.main_input->src_reproc_frame;
-        getSnapshotBuf(&tempData, pSnapStream);
-        if (pSnapStream != NULL) {
-            for (int j = 0; j < crop->num_of_streams; j++) {
-                    cam_rect_t streamCrop = crop->crop_info[j].crop;
-                    if (pSnapStream->getMyServerID() == crop->crop_info[j].stream_id) {
-                        inParams.zoomROI = streamCrop;
-                        DUMP("Zoom ROI : (%d, %d, %d, %d)",
-                                streamCrop.left, streamCrop.top,
-                                streamCrop.width, streamCrop.height);
-                        break;
-                    }
-            }
+        if (0 < crop->num_of_streams) {
+            cam_rect_t streamCrop = crop->crop_info[0].crop;
+            inParams.zoomROI = streamCrop;
+            DUMP("Zoom ROI : (%d, %d, %d, %d)",
+                    streamCrop.left, streamCrop.top,
+                    streamCrop.width, streamCrop.height);
         }
     }
 
@@ -627,7 +594,6 @@ int32_t QCameraBokeh::doBokehProcess(
     LOGD(":E");
     ATRACE_BEGIN("doBokehProcess");
     int32_t rc = NO_ERROR;
-    QCameraStream* pStream = NULL;
     uint32_t focusX,focusY;
     qrcp::DualCameraDDMEffects *effectObj = NULL;
     qrcp::DualCameraDDMEffects::EffectType type = qrcp::DualCameraDDMEffects::REFOCUS_CIRCLE;
@@ -681,7 +647,7 @@ int32_t QCameraBokeh::doBokehProcess(
 
     uint8_t dualCamConfig = DUAL_CAM_CONFIG;
     memset(prop, 0, sizeof(prop));
-    property_get("persist.camera.ddm.config", prop, "");
+    property_get("persist.vendor.camera.ddm.config", prop, "");
     if (strlen(prop) > 0) {
         dualCamConfig = atoi(prop);
     }
@@ -692,7 +658,7 @@ int32_t QCameraBokeh::doBokehProcess(
         ddmMode = qrcp::DepthMapMode::NORMAL_MODE;
 
     memset(prop, 0, sizeof(prop));
-    property_get("persist.camera.bokeh.ddmmode", prop, "");
+    property_get("persist.vendor.camera.bokeh.ddmmode", prop, "");
     if (strlen(prop) > 0) {
         if (!strcmp(prop, "normal"))
             ddmMode = qrcp::DepthMapMode::NORMAL_MODE;
@@ -766,7 +732,6 @@ int32_t QCameraBokeh::doBokehProcess(
     //Bokeh output size will be goodROI.width X goodROI.height.
     //set stream crop info so that jpeg will crop and upscale to original image size.
     //Take into account any zoom applied.
-    getSnapshotBuf(mBokehData.bokeh_output, pStream);
     cam_rect_t bokeh_out_dim;
     bokeh_out_dim.top = DIFF(inParams.zoomROI.top, goodRoi.top);
     bokeh_out_dim.left = DIFF(inParams.zoomROI.left, goodRoi.left);
@@ -774,8 +739,22 @@ int32_t QCameraBokeh::doBokehProcess(
     bokeh_out_dim.height = PAD_TO_SIZE(PMIN(goodRoi.height, inParams.zoomROI.height), CAM_PAD_TO_2);
     DUMP("\nBokeh Crop Left %d Top %d Width %d Height %d ", bokeh_out_dim.left, bokeh_out_dim.top,
             bokeh_out_dim.width,bokeh_out_dim.height);
-    if (pStream != NULL) {
-        pStream->setCropInfo(bokeh_out_dim);
+    mBokehData.bokeh_output->is_crop_valid = true;
+    mBokehData.bokeh_output->outputCrop = bokeh_out_dim;
+
+    //setting crop values in main also, to do zoom while JPEG encoding (HAL3).
+    if(mBokehData.main_input->jpeg_settings != NULL)
+    {
+        mBokehData.main_input->is_crop_valid = true;
+        mBokehData.main_input->outputCrop.top = inParams.zoomROI.top;
+        mBokehData.main_input->outputCrop.left = inParams.zoomROI.left;
+        mBokehData.main_input->outputCrop.width =
+                            PAD_TO_SIZE(PMIN(goodRoi.width, inParams.zoomROI.width), CAM_PAD_TO_2);
+        mBokehData.main_input->outputCrop.height =
+                           PAD_TO_SIZE(PMIN(goodRoi.height, inParams.zoomROI.height), CAM_PAD_TO_2);
+        DUMP("\nMain Crop left %d Top %d Width %d Height %d",mBokehData.main_input->outputCrop.left,
+                mBokehData.main_input->outputCrop.top, mBokehData.main_input->outputCrop.width,
+                mBokehData.main_input->outputCrop.height);
     }
 
     //apply zoom, if any, on depth map
@@ -786,10 +765,8 @@ int32_t QCameraBokeh::doBokehProcess(
             PAD_TO_SIZE((inParams.zoomROI.width * dmSize.width / primaryWidth), CAM_PAD_TO_2);
     depthCrop.height =
             PAD_TO_SIZE((inParams.zoomROI.height * dmSize.height / primaryHeight), CAM_PAD_TO_2);
-    getSnapshotBuf(mBokehData.aux_input, pStream);
-    if (pStream != NULL) {
-        pStream->setCropInfo(depthCrop);
-    }
+    mBokehData.depth_output->is_crop_valid = true;
+    mBokehData.depth_output->outputCrop = depthCrop;
     DUMP("\nDepth Crop Left %d Top %d Width %d Height %d ", depthCrop.left, depthCrop.top,
             depthCrop.width,depthCrop.height);
 
@@ -848,13 +825,13 @@ void QCameraBokeh::dumpYUVtoFile(
 
 }
 
-const char* QCameraBokeh::buildCommaSeparatedString(float array[], size_t length) {
+String8 QCameraBokeh::buildCommaSeparatedString(float array[], size_t length) {
     String8 str;
     str.appendFormat("%.4f", array[0]);
     for(size_t i = 1; i < length; i++) {
         str.appendFormat(",%.4f", array[i]);
     }
-    return str.string();
+    return str;
 }
 
 String8 QCameraBokeh::flattenCropInfo(cam_stream_crop_info_t* crop, uint8_t index)
@@ -963,10 +940,10 @@ String8 QCameraBokeh::extractCalibrationData()
 
     calibData.appendFormat(CALIB_FMT_STRINGS[11],
             buildCommaSeparatedString(calib_data.relative_rotation_matrix,
-            RELCAM_CALIB_ROT_MATRIX_MAX));
+            RELCAM_CALIB_ROT_MATRIX_MAX).string());
     calibData.appendFormat(CALIB_FMT_STRINGS[12],
             buildCommaSeparatedString(calib_data.relative_geometric_surface_parameters,
-            RELCAM_CALIB_SURFACE_PARMS_MAX));
+            RELCAM_CALIB_SURFACE_PARMS_MAX).string());
 
     calibData.appendFormat(CALIB_FMT_STRINGS[13], calib_data.relative_principle_point_x_offset);
     calibData.appendFormat(CALIB_FMT_STRINGS[14], calib_data.relative_principle_point_y_offset);
@@ -1001,14 +978,13 @@ void QCameraBokeh::dumpInputParams(const char* file, String8 str, uint32_t idx)
 int32_t QCameraBokeh::allocateDepthBuf(cam_frame_size_t depthSize)
 {
     int32_t rc = NO_ERROR;
-    QCameraStream* pSnapshotStream = NULL;
     mm_camera_super_buf_t *pInputFrame = mBokehData.aux_input->frame;
-    mm_camera_buf_def_t *pInputSnapshotBuf = getSnapshotBuf(mBokehData.aux_input, pSnapshotStream);
+    mm_camera_buf_def_t *pInputSnapshotBuf = getSnapshotBuf(mBokehData.aux_input);
 
-    if(!pInputSnapshotBuf || !pSnapshotStream)
+    if(!pInputSnapshotBuf)
     {
         releaseData(mBokehData.aux_input);
-        LOGE("Error!! Snapshot buffer/stream or depthmap not available");
+        LOGE("Error!! Snapshot buffer not available");
         return BAD_VALUE;
     }
 
@@ -1066,18 +1042,43 @@ int32_t QCameraBokeh::allocateDepthBuf(cam_frame_size_t depthSize)
     memcpy(&pOutputBufDefs[0], pInputSnapshotBuf, sizeof(mm_camera_buf_def_t));
     output_data->snapshot_heap->getBufDef(depthSize.offset, pOutputBufDefs[0], 0);
 
+    output_data->pUserData = mBokehData.aux_input->pUserData;
+    if(mBokehData.aux_input->metadata != NULL)
+    {
+        output_data->metadata = mBokehData.aux_input->metadata;
+    }
+
+    if(mBokehData.aux_input->output_jpeg_settings != NULL)
+    {
+        output_data->jpeg_settings = mBokehData.aux_input->output_jpeg_settings;
+    }
+
+    if(mBokehData.aux_input->src_reproc_frame != NULL && output_data->jpeg_settings != NULL)
+    {
+        output_data->src_reproc_frame = (mm_camera_super_buf_t *)
+                                        calloc(1, sizeof(mm_camera_super_buf_t));
+        if (output_data->src_reproc_frame == NULL) {
+            LOGE("No memory for src frame");
+            free(output_data);
+            return NO_MEMORY;
+        }
+        memcpy(output_data->src_reproc_frame, mBokehData.aux_input->src_reproc_frame,
+                                                       sizeof(mm_camera_super_buf_t));
+    }
     mBokehData.depth_output = output_data;
 
-    //Modify Aux stream properties for depth map
     //set depth map dimensions
     cam_dimension_t depth_dim;
     depth_dim.width = depthSize.width;
     depth_dim.height = depthSize.height;
-    pSnapshotStream->setFrameDimension(depth_dim);
+    mBokehData.depth_output->is_dim_valid = true;
+    mBokehData.depth_output->outputDim = depth_dim;
     //set depth map offset info
-    pSnapshotStream->setFrameOffset(depthSize.offset);
+    mBokehData.depth_output->is_offset_valid = true;
+    mBokehData.depth_output->snap_offset = depthSize.offset;
     //set depth map format
-    pSnapshotStream->setFormat(CAM_FORMAT_Y_ONLY);
+    mBokehData.depth_output->is_format_valid = true;
+    mBokehData.depth_output->outputFormat = CAM_FORMAT_Y_ONLY;
     return rc;
 }
 

@@ -92,6 +92,11 @@ else
 LOCAL_CFLAGS += -std=c++11 -std=gnu++0x
 endif
 
+#Android P onwards we use vendor prefix
+ifeq ($(call is-platform-sdk-version-at-least,28),true)
+LOCAL_CFLAGS += -DUSE_VENDOR_PROP
+endif
+
 #HAL 1.0 Flags
 LOCAL_CFLAGS += -DDEFAULT_DENOISE_MODE_ON -DHAL3 -DQCAMERA_REDEFINE_LOG
 LOCAL_LDFLAGS += -Wl,--wrap=open -Wl,--wrap=close -Wl,--wrap=socket -Wl,--wrap=pipe -Wl,--wrap=mmap -Wl,--wrap=__open_2
@@ -105,8 +110,8 @@ LOCAL_C_INCLUDES := \
         $(LOCAL_PATH)/stack/mm-camera-interface/inc \
         $(LOCAL_PATH)/util \
         $(LOCAL_PATH)/HAL3 \
-        $(call project-path-for,qcom-media)/libstagefrighthw \
-        $(call project-path-for,qcom-media)/mm-core/inc \
+        hardware/qcom/media/libstagefrighthw \
+        hardware/qcom/media/mm-core/inc \
         $(TARGET_OUT_HEADERS)/mm-camera-lib/cp/prebuilt
 
 LOCAL_HEADER_LIBRARIES := media_plugin_headers
@@ -117,10 +122,11 @@ LOCAL_HEADER_LIBRARIES += libhardware_headers
 
 #HAL 1.0 Include paths
 LOCAL_C_INCLUDES += \
-        $(call project-path-for,qcom-camera)/QCamera2/HAL
+        hardware/qcom/camera/QCamera2/HAL
 
 ifeq ($(TARGET_COMPILE_WITH_MSM_KERNEL),true)
-LOCAL_HEADER_LIBRARIES += generated_kernel_headers
+LOCAL_C_INCLUDES += $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr/include
+LOCAL_ADDITIONAL_DEPENDENCIES := $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr
 endif
 ifeq ($(TARGET_TS_MAKEUP),true)
 LOCAL_CFLAGS += -DTARGET_TS_MAKEUP
@@ -144,7 +150,7 @@ LOCAL_CFLAGS += -DUSE_CAMERA_METABUFFER_UTILS
 LOCAL_C_INCLUDES += \
         $(TARGET_OUT_HEADERS)/qcom/display
 LOCAL_C_INCLUDES += \
-        $(call project-path-for,qcom-display)/libqservice
+        hardware/qcom/display/libqservice
 LOCAL_SHARED_LIBRARIES := liblog libhardware libutils libcutils libdl libsync
 LOCAL_SHARED_LIBRARIES += libmmcamera_interface libmmjpeg_interface libui libcamera_metadata
 LOCAL_SHARED_LIBRARIES += libqdMetaData libqservice libbinder
@@ -154,7 +160,7 @@ LOCAL_SHARED_LIBRARIES += libdualcameraddm
 LOCAL_CFLAGS += ENABLE_QC_BOKEH
 endif
 ifeq ($(USE_DISPLAY_SERVICE),true)
-LOCAL_SHARED_LIBRARIES += android.frameworks.displayservice@1.0 libhidlbase libhidltransport
+LOCAL_SHARED_LIBRARIES += android.frameworks.displayservice@1.0 android.hidl.base@1.0 libhidlbase libhidltransport
 else
 LOCAL_SHARED_LIBRARIES += libgui
 endif

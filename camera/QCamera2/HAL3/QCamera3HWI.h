@@ -47,6 +47,8 @@
 #include "QCameraCommon.h"
 #include "QCamera3VendorTags.h"
 #include "QCameraDualCamSettings.h"
+#include "QCameraFOVControl.h"
+
 
 extern "C" {
 #include "mm_camera_interface.h"
@@ -82,6 +84,12 @@ typedef int64_t nsecs_t;
 #define FRAME_REGISTER_LRU_SIZE 256
 #define INTERNAL_FRAME_STARTING_NUMBER 800
 #define EMPTY_FRAMEWORK_FRAME_NUMBER 0xFFFFFFFF
+
+//blur range
+#define MIN_BLUR 0
+#define MAX_BLUR 100
+#define BLUR_STEP 1
+
 
 typedef enum {
     SET_ENABLE,
@@ -309,6 +317,20 @@ public:
     } QCameraPropMap;
 
     uint32_t getCameraID() {return mCameraId;}
+    bool isDualCamera() { return mDualCamera; };
+    int32_t bundleRelatedCameras(bool enable_sync);
+    cam_hal_pp_type_t getHalPPType() {return m_halPPType;}
+    bool isDimSupportedbyCamType(const cam_dimension_t &dim, const cam_sync_type_t &type);
+    cam_dimension_t getOptimalSupportedDim(const cam_dimension_t &dim, const cam_sync_type_t &type);
+    cam_dimension_t getMaxSingleIspRes();
+    bool isAsymetricDim(const cam_dimension_t &dim);
+    bool isPPUpscaleNeededForDim(const cam_dimension_t &dim);
+    void rectifyStreamDimIfNeeded(
+        cam_dimension_t &dim, const cam_sync_type_t &type, bool &needUpScale);
+    uint32_t getBlurLevel() {return mBlurLevel;}
+    cam_dual_camera_perf_mode_t getLowPowerMode(cam_sync_type_t cam);
+    bool needHALPP() {return m_bNeedHalPP;}
+    cam_capability_t *getCamHalCapabilities();
 private:
 
     // State transition conditions:
@@ -382,7 +404,7 @@ private:
     bool isHdrSnapshotRequest(camera3_capture_request *request);
     int32_t setMobicat();
 
-    int32_t getSensorOutputSize(cam_dimension_t &sensor_dim);
+    int32_t getSensorOutputSize(cam_dimension_t &sensor_dim, uint32_t cam_type = CAM_TYPE_MAIN);
     int32_t setHalFpsRange(const CameraMetadata &settings,
             metadata_buffer_t *hal_metadata);
     int32_t extractSceneMode(const CameraMetadata &frame_settings, uint8_t metaMode,
@@ -393,6 +415,8 @@ private:
             const cam_dimension_t &maxViewfinderSize);
 
     void addToPPFeatureMask(int stream_format, uint32_t stream_idx);
+    void setDCFeature(cam_feature_mask_t& feature_mask,
+            cam_stream_type_t stream_type);
     void updateFpsInPreviewBuffer(metadata_buffer_t *metadata, uint32_t frame_number);
     void updateTimeStampInPendingBuffers(uint32_t frameNumber, nsecs_t timestamp);
 
@@ -406,6 +430,7 @@ private:
             camera3_error_msg_code_t errorCode);
     int32_t getReprocessibleOutputStreamId(uint32_t &id);
     int32_t handleCameraDeviceError();
+    bool checkFrameInPendingList(const uint32_t frame_number);
 
     bool isOnEncoder(const cam_dimension_t max_viewfinder_size,
             uint32_t width, uint32_t height);
@@ -414,6 +439,7 @@ private:
 
     static bool supportBurstCapture(uint32_t cameraId);
     int32_t setBundleInfo();
+    int32_t setAuxBundleInfo();
     int32_t setInstantAEC(const CameraMetadata &meta);
 
     static void convertLandmarks(cam_face_landmarks_info_t face, int32_t* landmarks);
@@ -426,9 +452,30 @@ private:
             bool isVideoHdrEnable = false);
     int32_t captureQuadraCfaRawInternal(camera3_capture_request_t *request);
     int32_t switchStreamConfigInternal(uint32_t frame_number);
+    uint8_t  mDualCamType;
+
+    inline bool isBayerMono() { return (mDualCamType == DUAL_CAM_BAYER_MONO); };
+    int32_t sendDualCamCmd(cam_dual_camera_cmd_type type,
+            uint8_t num_cam, void *info);
+    int32_t setDualCamBundleInfo(bool enable_sync,
+            uint8_t bundle_cam_idx);
+    int32_t configureHalPostProcess(bool bIsInput);
+    void switchMaster(uint32_t masterCam);
+    int32_t setDCMasterInfo(uint32_t camMaster);
+    int32_t setDCControls(uint32_t camMaster, uint32_t state,
+            bool bundleSnap, cam_fallback_mode_t fallbackMode);
+    int32_t setDCLowPowerMode(uint32_t state);
+    int32_t setDCFallbackMode(cam_fallback_mode_t fallback);
+    int32_t setDCDeferCamera(cam_dual_camera_defer_cmd_t type);
+    //dual camera api's
+    void rectifyStreamSizesByCamType(
+            cam_stream_size_info_t* streamsInfo, const cam_sync_type_t &type);
+    void initDCSettings();
 
     camera3_device_t   mCameraDevice;
     uint32_t           mCameraId;
+    uint32_t           mBlurLevel;
+    cam_hal_pp_type_t m_halPPType;
     mm_camera_vtbl_t  *mCameraHandle;
     bool               mCameraInitialized;
     camera_metadata_t *mDefaultMetadata[CAMERA3_TEMPLATE_COUNT];
@@ -443,7 +490,7 @@ private:
     QCamera3RegularChannel *mDummyBatchChannel;
     QCamera3DepthChannel *mDepthChannel;
     QCameraPerfLockMgr mPerfLockMgr;
-
+    QCameraFOVControl *m_pFovControl;
     uint32_t mChannelHandle;
 
     void saveExifParams(metadata_buffer_t *metadata);
@@ -460,6 +507,7 @@ private:
     bool mShouldSetSensorHdr;
     QCamera3HeapMemory *mParamHeap;
     metadata_buffer_t* mParameters;
+    metadata_buffer_t* mAuxParameters;
     metadata_buffer_t* mPrevParameters;
     CameraMetadata mCurJpegMeta;
     bool m_bIsVideo;
@@ -546,6 +594,7 @@ private:
     bool mWokenUpByDaemon;
     int32_t mCurrentRequestId;
     cam_stream_size_info_t mStreamConfigInfo;
+    cam_stream_size_info_t mAuxStreamConfigInfo;
 
     //mutex for serialized access to camera3_device_ops_t functions
     pthread_mutex_t mMutex;
@@ -660,7 +709,7 @@ private:
     bool mIsMainCamera;
     uint8_t mLinkedCameraId;
     QCamera3HeapMemory *m_pDualCamCmdHeap;
-    cam_dual_camera_cmd_info_t *m_pDualCamCmdPtr;
+    cam_dual_camera_cmd_info_t *m_pDualCamCmdPtr[MM_CAMERA_MAX_CAM_CNT];
     cam_sync_related_sensors_event_info_t m_relCamSyncInfo;
     Mutex mFlushLock;
     bool m_bSensorHDREnabled;
@@ -674,6 +723,16 @@ private:
     bool m_bQuadraSizeConfigured;
     int8_t m_ppChannelCnt;
     camera3_stream_configuration_t mStreamList;
+
+    //UDCF
+    bool mDualCamera;
+    bool m_bNeedHalPP;
+    bool mBundledSnapshot;
+    uint32_t mActiveCameras;
+    uint32_t mMasterCamera;
+    cam_fallback_mode_t mFallbackMode;
+    bool mLPMEnable;
+    cam_rtb_msg_type_t mRTBStatus;
 };
 
 }; // namespace qcamera

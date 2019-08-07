@@ -1,4 +1,4 @@
-/* Copyright (c) 2015-2016, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2015-2018, The Linux Foundation. All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
 * modification, are permitted provided that the following conditions are
@@ -623,7 +623,7 @@ QCameraPerfLockIntf* QCameraPerfLockIntf::createSingleton()
         uint32_t perfLockEnable = 0;
         char value[PROPERTY_VALUE_MAX];
 
-        property_get("persist.camera.perflock.enable", value, "1");
+        property_get("persist.vendor.camera.perflock.enable", value, "1");
         perfLockEnable = atoi(value);
 
         if (perfLockEnable) {

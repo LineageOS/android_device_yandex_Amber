@@ -137,6 +137,8 @@ typedef struct {
     uint32_t                     zoomUserPrev;
     uint32_t                     zoomWide;
     uint32_t                     zoomTele;
+    uint32_t                     zoomRatioWide;
+    uint32_t                     zoomRatioTele;
     uint32_t                     zoomWideIsp;
     uint32_t                     zoomTeleIsp;
     uint32_t                    *zoomRatioTable;
@@ -231,7 +233,8 @@ typedef struct {
 class QCameraFOVControl {
 public:
     ~QCameraFOVControl();
-    static QCameraFOVControl* create(cam_capability_t *capsMainCam, cam_capability_t* capsAuxCam);
+    static QCameraFOVControl* create(cam_capability_t *capsMainCam,
+            cam_capability_t* capsAuxCam, uint8_t isHAL3 = false);
     int32_t updateConfigSettings(parm_buffer_t* paramsMainCam, parm_buffer_t* paramsAuxCam);
     cam_capability_t consolidateCapabilities(cam_capability_t* capsMainCam,
             cam_capability_t* capsAuxCam);
@@ -247,7 +250,7 @@ public:
     bool isMainCamFovWider();
 
 private:
-    QCameraFOVControl();
+    QCameraFOVControl(uint8_t isHAL3);
     bool validateAndExtractParameters(cam_capability_t  *capsMainCam,
             cam_capability_t  *capsAuxCam);
     bool calculateBasicFovRatio();
@@ -271,6 +274,12 @@ private:
     bool isTimedOut(timer_t timer);
     void startTimer(timer_t *timer, uint32_t time);
     void inactivateTimer(timer_t *timer);
+    void setZoomParam(uint8_t cam_type, cam_zoom_info_t zoomInfo, uint32_t zoomTotal,
+            uint32_t zoomIsp, bool snapshotPostProcess, parm_buffer_t* params, bool isHAL3);
+    void setCropParam(uint8_t cam_type, uint32_t zoomStep, parm_buffer_t* params);
+    cam_area_t translateRoi(cam_area_t roiMain, cam_sync_type_t cam);
+    cam_face_detection_data_t translateHAL3FDRoi(
+        cam_face_detection_data_t metaFD, cam_sync_type_t cam);
 
     Mutex                           mMutex;
     fov_control_config_t            mFovControlConfig;
@@ -282,6 +291,7 @@ private:
     cam_hal_pp_type_t               mHalPPType;
     fov_control_parm_t              mFovControlParm;
     uint8_t                         mDualCamType;
+    uint8_t                         mbIsHAL3;
 };
 
 }; // namespace qcamera

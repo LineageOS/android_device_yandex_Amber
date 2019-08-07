@@ -139,6 +139,7 @@ typedef struct {
     uint32_t related_sensor_session_id;
     /*Low power mode type. Static info per device*/
     cam_dual_camera_perf_mode_t perf_mode;
+    uint8_t hal_lpm_control;
 } cam_dual_camera_bundle_info_t;
 typedef cam_dual_camera_bundle_info_t cam_sync_related_sensors_event_info_t;
 
@@ -678,6 +679,7 @@ typedef struct cam_capability{
     /*Mono Stats support*/
     uint8_t is_mono_stats_suport;
     uint8_t is_depth_sensor;
+    cam_dimension_t single_isp_max_size;
 } cam_capability_t;
 
 typedef enum {
@@ -1185,6 +1187,7 @@ typedef struct {
     INCLUDE(CAM_INTF_META_RTB_DATA,                     cam_rtb_msg_type_t,          1);
     INCLUDE(CAM_INTF_META_DC_CAPTURE,                   uint8_t,                     1);
     INCLUDE(CAM_INTF_PARM_BOKEH_MODE,                   uint8_t,                     1);
+    INCLUDE(CAM_INTF_META_USERZOOM,                     cam_zoom_info_t,             1);
 } metadata_data_t;
 
 /* Update clear_metadata_buffer() function when a new is_xxx_valid is added to

@@ -32,6 +32,8 @@
 
 // System dependencies
 #include <media/msmb_camera.h>
+#include <linux/media.h>
+
 
 // Camera dependencies
 #include "cam_intf.h"
@@ -979,8 +981,8 @@ int32_t mm_stream_calc_offset_raw(cam_format_t fmt,
         cam_padding_info_t *padding,
         cam_stream_buf_plane_info_t *buf_planes);
 
-int32_t mm_stream_calc_offset_video(cam_format_t fmt,
-        cam_dimension_t *dim,
+int32_t mm_stream_calc_offset_video(cam_stream_info_t *stream_info,
+        cam_padding_info_t *padding,
         cam_stream_buf_plane_info_t *buf_planes);
 
 int32_t mm_stream_calc_offset_metadata(cam_dimension_t *dim,
@@ -1019,4 +1021,8 @@ uint32_t get_aux_camera_handle(uint32_t handle);
 
 /*Validate 2 handle if it is belong to same instance of camera/channel/stream*/
 uint8_t validate_handle(uint32_t src_handle, uint32_t handle);
+
+int mm_camera_util_match_subdev_type(struct media_entity_desc entity,
+     uint32_t gid, uint32_t type);
+
 #endif /*__MM_CAMERA_INTERFACE_H__*/

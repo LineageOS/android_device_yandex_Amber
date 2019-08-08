@@ -168,6 +168,13 @@ vendor/bin/hw/vendor.qti.hardware.tui_comm@1.0-service-qti
 vendor/etc/init/vendor.qti.hardware.tui_comm@1.0-service-qti.rc
 vendor/lib64/vendor.qti.hardware.tui_comm@1.0.so
 
+# DRM - Widevine
+vendor/bin/hw/android.hardware.drm@1.1-service.widevine
+vendor/etc/init/android.hardware.drm@1.1-service.widevine.rc
+vendor/lib64/libwvhidl.so
+vendor/lib64/libhdcpsrm.so
+vendor/lib64/libcpion.so
+
 # Bluetooth FM - from yandex
 lib/fm_helium.so
 lib/libfm-hci.so

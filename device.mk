@@ -21,10 +21,8 @@
 # definition file).
 #
 
-# Device was launched with O-MR1
-$(call inherit-product, $(SRC_TARGET_DIR)/product/product_launched_with_o_mr1.mk)
-
-$(call inherit-product, vendor/yandex/Amber/Amber-vendor.mk)
+# A/B updater
+AB_OTA_UPDATER := true
 
 # Overlays
 DEVICE_PACKAGE_OVERLAYS += \
@@ -106,6 +104,11 @@ PRODUCT_PACKAGES += bootctrl.sdm660 \
     android.hardware.boot@1.0-service
 
 # A/B Update engine
+AB_OTA_PARTITIONS += \
+    boot \
+    system \
+    vendor
+
 PRODUCT_PACKAGES += \
     brillo_update_payload \
     update_engine \
@@ -518,3 +521,5 @@ PRODUCT_PACKAGES += \
 
 PRODUCT_BOOT_JARS += \
     WfdCommon
+
+$(call inherit-product, vendor/yandex/Amber/Amber-vendor.mk)

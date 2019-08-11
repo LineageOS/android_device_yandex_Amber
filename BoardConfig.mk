@@ -57,7 +57,7 @@ BOARD_RAMDISK_OFFSET := 0x01000000
 BOARD_KERNEL_IMAGE_NAME := Image.gz-dtb
 TARGET_KERNEL_CROSS_COMPILE_PREFIX := aarch64-linux-android-
 TARGET_KERNEL_SOURCE := kernel/yandex/sdm660
-TARGET_KERNEL_CONFIG := sdm660-perf_defconfig
+TARGET_KERNEL_CONFIG := lineageos_Amber_defconfig
 TARGET_KERNEL_VERSION := 4.4
 
 # QCOM hardware

@@ -102,6 +102,8 @@ PRODUCT_PROPERTY_OVERRIDES += \
     persist.radio.multisim.config=dsds \
     sys.autosuspend.timeout=500000
 
+PRODUCT_COMPATIBLE_PROPERTY_OVERRIDE := true
+
 # A/B related packages
 PRODUCT_PACKAGES += bootctrl.sdm660 \
     android.hardware.boot@1.0-impl \

@@ -119,7 +119,6 @@ AB_OTA_PARTITIONS += \
     vendor
 
 PRODUCT_PACKAGES += \
-    brillo_update_payload \
     update_engine \
     update_engine_sideload \
     update_verifier

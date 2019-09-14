@@ -222,9 +222,6 @@ TARGET_USES_INTERACTION_BOOST := true
 # Recovery
 TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/configs/recovery_AB_split_variant.fstab
 
-# RIL
-TARGET_RIL_VARIANT := caf
-
 # SDK
 BOARD_SYSTEMSDK_VERSIONS := 28
 

@@ -226,7 +226,7 @@ TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/configs/recovery_AB_split_variant.fstab
 BOARD_SYSTEMSDK_VERSIONS := 28
 
 # SELinux
-include device/qcom/sepolicy/sepolicy.mk
+include device/qcom/sepolicy-legacy-um/sepolicy.mk
 BOARD_SEPOLICY_DIRS += $(DEVICE_PATH)/sepolicy
 
 # Treble

@@ -156,7 +156,6 @@ TARGET_PROVIDES_LIBLIGHT := true
 DEVICE_MANIFEST_FILE := $(DEVICE_PATH)/configs/manifest.xml
 DEVICE_MATRIX_FILE   := $(DEVICE_PATH)/configs/compatibility_matrix.xml
 DEVICE_FRAMEWORK_MANIFEST_FILE := $(DEVICE_PATH)/configs/framework_manifest.xml
-DEVICE_FRAMEWORK_COMPATIBILITY_MATRIX_FILE := $(DEVICE_PATH)/configs/vendor_framework_compatibility_matrix.xml
 
 # Media
 BOARD_SECCOMP_POLICY := $(DEVICE_PATH)/seccomp

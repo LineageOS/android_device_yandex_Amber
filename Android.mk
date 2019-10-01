@@ -42,43 +42,23 @@ BT_FIRMWARE_MOUNT_POINT := $(TARGET_OUT_VENDOR)/bt_firmware
 DSP_MOUNT_POINT := $(TARGET_OUT_VENDOR)/dsp
 FSG_MOUNT_POINT := $(TARGET_OUT_VENDOR)/fsg
 
-ALL_DEFAULT_INSTALLED_MODULES += $(FIRMWARE_MOUNT_POINT) \
-	$(BT_FIRMWARE_MOUNT_POINT) \
-	$(DSP_MOUNT_POINT) \
-	$(FSG_MOUNT_POINT)
-
 $(FIRMWARE_MOUNT_POINT):
 	@echo "Creating $(FIRMWARE_MOUNT_POINT)"
 	@mkdir -p $(TARGET_OUT_VENDOR)/firmware_mnt
-ifneq ($(TARGET_MOUNT_POINTS_SYMLINKS),false)
-	@ln -sf /vendor/firmware_mnt $(TARGET_ROOT_OUT)/firmware
-endif
 
 $(BT_FIRMWARE_MOUNT_POINT):
 	@echo "Creating $(BT_FIRMWARE_MOUNT_POINT)"
 	@mkdir -p $(TARGET_OUT_VENDOR)/bt_firmware
-ifneq ($(TARGET_MOUNT_POINTS_SYMLINKS),false)
-	@ln -sf /vendor/bt_firmware $(TARGET_ROOT_OUT)/bt_firmware
-endif
 
 $(DSP_MOUNT_POINT):
 	@echo "Creating $(DSP_MOUNT_POINT)"
 	@mkdir -p $(TARGET_OUT_VENDOR)/dsp
-ifneq ($(TARGET_MOUNT_POINTS_SYMLINKS),false)
-	@ln -sf /vendor/dsp $(TARGET_ROOT_OUT)/dsp
-endif
 
 $(FSG_MOUNT_POINT):
 	@echo "Creating $(FSG_MOUNT_POINT)"
 	@mkdir -p $(TARGET_OUT_VENDOR)/fsg
 
-DSP_SYMLINK := $(TARGET_OUT_VENDOR)/lib/dsp
-$(DSP_SYMLINK): $(LOCAL_INSTALLED_MODULE)
-	@echo "Creating DSP folder symlink: $@"
-	@rm -rf $@
-	$(hide) ln -sf /vendor/dsp $@
-
-ALL_DEFAULT_INSTALLED_MODULES += $(DSP_SYMLINK)
+ALL_DEFAULT_INSTALLED_MODULES += $(FIRMWARE_MOUNT_POINT) $(BT_FIRMWARE_MOUNT_POINT) $(DSP_MOUNT_POINT) $(FSG_MOUNT_POINT)
 
 IMS_LIBS := libimscamera_jni.so libimsmedia_jni.so
 IMS_SYMLINKS := $(addprefix $(TARGET_OUT_APPS_PRIVILEGED)/ims/lib/arm64/,$(notdir $(IMS_LIBS)))

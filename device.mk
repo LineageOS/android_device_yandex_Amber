@@ -361,10 +361,6 @@ PRODUCT_PACKAGES += \
     android.hardware.health@2.0-impl \
     android.hardware.health@2.0-service
 
-# HIDL
-PRODUCT_PACKAGES += \
-    android.hidl.base@1.0
-
 # IPv6
 PRODUCT_PACKAGES += \
     ebtables \

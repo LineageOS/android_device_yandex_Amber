@@ -561,7 +561,7 @@ vendor/lib64/vendor.qti.imsrtpservice@1.0.so
 -priv-app/ims/ims.apk
 
 # Time services - from yandex
--vendor/app/TimeService/TimeService.apk
+-vendor/app/TimeService/TimeService.apk;:timeservice_app_cert-legacy-um
 vendor/bin/time_daemon
 vendor/etc/init/init.time_daemon.rc
 vendor/lib64/libtime_genoff.so

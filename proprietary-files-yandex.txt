@@ -292,7 +292,7 @@ vendor/firmware/elanfp64.b06
 vendor/firmware/elanfp64.b07
 vendor/firmware/elanfp64.mbn
 vendor/firmware/elanfp64.mdt
-vendor/lib64/hw/fingerprint.default.so
+vendor/lib64/hw/fingerprint.default.so:vendor/lib64/hw/fingerprint.sdm660.so
 
 # Firmware Graphics
 vendor/firmware/a508_zap.b00

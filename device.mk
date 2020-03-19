@@ -452,6 +452,10 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     libjson
 
+# QTI
+PRODUCT_PACKAGES += \
+     libqti_vndfwk_detect.vendor
+
 # Qualcomm
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/privapp-permissions-qti.xml:system/etc/permissions/privapp-permissions-qti.xml \
@@ -511,8 +515,14 @@ PRODUCT_SOONG_NAMESPACES += $(LOCAL_PATH)
 
 # Telephony
 PRODUCT_PACKAGES += \
+    ims-ext-common \
     ims-ext-common_system \
-    telephony-ext
+    telephony-ext \
+    ims_ext_common.xml \
+    qti-telephony-hidl-wrapper \
+    qti_telephony_hidl_wrapper.xml \
+    qti-telephony-utils \
+    qti_telephony_utils.xml
 
 PRODUCT_BOOT_JARS += \
     ims-ext-common_system \

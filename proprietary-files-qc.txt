@@ -398,7 +398,9 @@ vendor/lib64/vendor.qti.hardware.perf@1.0.so
 # Peripheral manager - from yandex
 vendor/bin/pm-proxy
 vendor/bin/pm-service
-vendor/lib64/libperipheral_client.so
+
+# Peripheral manager - from Nokia DRG_sprout 10 QKQ1.190828.002 00WW_4_040
+vendor/lib64/libperipheral_client.so|a0dd574c8af3135adae10ef49065fa765906db7a
 
 # Power-off alarm - from Nokia DRG_sprout 10 QKQ1.190828.002 00WW_4_040
 -product/app/PowerOffAlarm/PowerOffAlarm.apk|fa84887979055559c0aaaf9d3d324f82ed24076f
@@ -684,8 +686,8 @@ vendor/bin/time_daemon
 vendor/etc/init/init.time_daemon.rc
 vendor/lib64/libtime_genoff.so
 
-# Wifi - from yandex
-vendor/bin/cnss-daemon
+# Wifi - from Nokia DRG_sprout 10 QKQ1.190828.002 00WW_4_040
+vendor/bin/cnss-daemon|3f51988443047eb02ae1607b0d6bd05a4386c2b1
 
 # WiFi Display - from Nokia DRG_sprout 10 QKQ1.190828.002 00WW_4_040
 bin/wfdservice|d9cccfd6ca14a1d83117533296d6cac2c139c310

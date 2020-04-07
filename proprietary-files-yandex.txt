@@ -98,7 +98,6 @@ vendor/lib/libmmcamera2_stats_lib.so
 vendor/lib/libmmcamera2_stats_modules.so
 vendor/lib/libdepthmapwrapper.so
 vendor/lib/libdualcameraddm.so
-vendor/lib/libhal_dbg.so
 vendor/lib/libremosaic_daemon.so
 vendor/lib/libvideobokeh.so
 

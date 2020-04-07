@@ -216,9 +216,9 @@ vendor/lib64/hw/gatekeeper.sdm660.so
 etc/permissions/com.qti.location.sdk.xml
 etc/permissions/com.qualcomm.location.xml
 etc/permissions/izat.xt.srv.xml
-etc/permissions/privapp-permissions-com.qualcomm.location.xml
-framework/com.qti.location.sdk.jar
-framework/izat.xt.srv.jar
+etc/permissions/privapp-permissions-com.qualcomm.location.xml|2dc7fba818bdf582bfea849a74f4b312d90745c9
+framework/com.qti.location.sdk.jar|5dcbf27bd7709a111985e9660b5b61b5fb7a22b1
+framework/izat.xt.srv.jar|5d48ba7a65ca6f62afd3e0dc886f590e2ad18bc3
 lib64/liblocationservice_jni.so
 lib64/libxt_native.so
 lib64/vendor.qti.gnss@1.0.so

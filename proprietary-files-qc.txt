@@ -504,7 +504,7 @@ vendor/lib64/libpdnotifier.so|f187a84db01f690035aeebbffbec0ee3aec9769e
 vendor/lib64/libqcrilFramework.so|7a98476f3fe222ec62263c387dce1996cb707a31
 vendor/lib64/libqrtr.so|9addbb504885bb2a82e0b19e38077742bc48c10f
 vendor/lib64/libqsocket.so|dd4067d7a79565f11034277d4ef46698cd17c19b
-vendor/lib64/libril-qc-hal-qmi.so|a8d12d61530e704626db49421f73dbcba4db7365
+vendor/lib64/libril-qc-hal-qmi.so|fb28d5bdcfdbbd5de5dc9b2b4eb85e440da7f857
 vendor/lib64/libril-qc-ltedirectdisc.so|71e79e3968f7ccf086f5911778ac04c676130110
 vendor/lib64/libril-qc-radioconfig.so|511e7c38c628be0d746f4acc49dfa4cc6af59978
 vendor/lib64/libril-qcril-hook-oem.so|bc216efecb94b352b1d9be890bbcf5fc29e2f830
@@ -561,6 +561,9 @@ vendor/lib64/vendor.qti.hardware.radio.internal.deviceinfo@1.0.so|0ed46db784c555
 
 # Radio - from cmi RKQ1.200710.002-V12.1.2.0.RJACNXM
 system_ext/framework/qti-telephony-common.jar|98951c48563c5846a58c9a3c4c254f32d0741f36
+
+# Radio - patched
+system/lib64/vndk-29/android.hardware.radio.config@1.1.so:vendor/lib64/android.hardware.radio.config@1.1_shim.so|cb8a481052a3e3beb196e389aca1466031e5ec70
 
 # Radio IMS - from Nokia DRG_sprout 10 QKQ1.190828.002 00WW_4_040
 -product/app/uceShimService/uceShimService.apk|95a7e8676532915759cb60f6c01f9ea489929bf5

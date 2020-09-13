@@ -69,5 +69,8 @@ extract "${MY_DIR}/proprietary-files-yandex.txt" "${SRC}" ${KANG} --section "${S
 DEVICE_BLOB_ROOT="$LINEAGE_ROOT"/vendor/"$VENDOR"/"$DEVICE"/proprietary
 
 patchelf --remove-needed libgui.so "$DEVICE_BLOB_ROOT"/vendor/lib/libmmcamera_ppeiscore.so
+patchelf --replace-needed "android.hardware.radio.config@1.1.so" "android.hardware.radio.config@1.1_shim.so" "$DEVICE_BLOB_ROOT"/vendor/lib64/libril-qc-hal-qmi.so
+patchelf --set-soname "android.hardware.radio.config@1.1_shim.so" "$DEVICE_BLOB_ROOT"/vendor/lib64/android.hardware.radio.config@1.1_shim.so
+sed -i -e 's|android.hardware.radio.config@1.1::IRadioConfig\x00|android.hardware.radio.config@1.0::IRadioConfig\x00|g' "$DEVICE_BLOB_ROOT"/vendor/lib64/android.hardware.radio.config@1.1_shim.so
 
 "${MY_DIR}/setup-makefiles.sh"

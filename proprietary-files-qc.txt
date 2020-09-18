@@ -681,7 +681,7 @@ vendor/lib/vendor.qti.imsrtpservice@2.1-service-Impl.so|12948fe4c222cf051cccf607
 vendor/lib/vendor.qti.imsrtpservice@2.1.so|97b18029d9e93c329cc6f0502fa27acf339051aa
 
 # Time services - from yandex
--vendor/app/TimeService/TimeService.apk;:timeservice_app_cert-legacy-um
+-vendor/app/TimeService/TimeService.apk
 vendor/bin/time_daemon
 vendor/etc/init/init.time_daemon.rc
 vendor/lib64/libtime_genoff.so

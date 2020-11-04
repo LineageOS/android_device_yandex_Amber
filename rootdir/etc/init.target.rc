@@ -97,6 +97,9 @@ on boot
 #Create folder dump yuv images while debugging
     mkdir /data/vendor/camera 0770 camera camera
 
+    # Disable serial console
+    setprop init.svc.console stopped
+
 #Load WLAN driver
    insmod /vendor/lib/modules/qca_cld3_wlan.ko
 

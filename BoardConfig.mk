@@ -193,6 +193,10 @@ TARGET_COPY_OUT_VENDOR := vendor
 # Security patch level
 VENDOR_SECURITY_PATCH := 2020-10-05
 
+# Verified Boot
+BOARD_AVB_ENABLE := false
+BOARD_AVB_MAKE_VBMETA_IMAGE_ARGS += --flags 3
+
 # Wifi
 BOARD_HAS_QCOM_WLAN := true
 BOARD_WLAN_DEVICE := qcwcn

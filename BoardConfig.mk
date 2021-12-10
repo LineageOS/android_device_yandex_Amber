@@ -58,6 +58,7 @@ BOARD_KERNEL_IMAGE_NAME := Image.gz-dtb
 TARGET_KERNEL_SOURCE := kernel/yandex/sdm660
 TARGET_KERNEL_CONFIG := lineageos_Amber_defconfig
 TARGET_KERNEL_VERSION := 4.4
+TARGET_KERNEL_CLANG_COMPILE := true
 
 # QCOM hardware
 BOARD_USES_QCOM_HARDWARE := true

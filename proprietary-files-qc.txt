@@ -559,6 +559,9 @@ vendor/radio/qcril_database/upgrade/5_version_update_ecc_table.sql|fcb2cba3bfd71
 vendor/lib/vendor.qti.hardware.radio.internal.deviceinfo@1.0.so|1e46c3893b158523a577fb65a2fb506b8bd74cf8
 vendor/lib64/vendor.qti.hardware.radio.internal.deviceinfo@1.0.so|0ed46db784c55564219ac2097753df6c5b37bd2f
 
+# Radio - from cmi RKQ1.200710.002-V12.1.2.0.RJACNXM
+system_ext/framework/qti-telephony-common.jar|98951c48563c5846a58c9a3c4c254f32d0741f36
+
 # Radio IMS - from Nokia DRG_sprout 10 QKQ1.190828.002 00WW_4_040
 -product/app/uceShimService/uceShimService.apk|95a7e8676532915759cb60f6c01f9ea489929bf5
 product/etc/permissions/com.qualcomm.qti.imscmservice-V2.0-java.xml|aeaf8d4c7d421bd25a1aca1736980b6e4575c7ce
